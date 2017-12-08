@@ -32,6 +32,13 @@ var url = require('url');
 var fs = require('fs');
 var WebSocketServer = require('websocket').server;
 
+var express = require('express');
+var app = express();
+var path = require("path");
+
+app.use(express.static(path.join(__dirname)));
+
+
 // Used for managing the text chat user list.
 
 var connectionArray = [];
@@ -138,8 +145,8 @@ function sendUserListToAll() {
 // server.
 
 var httpsOptions = {
-  key: fs.readFileSync("/etc/pki/tls/private/mdn.key"),
-  cert: fs.readFileSync("/etc/pki/tls/certs/mdn.crt")
+  key: fs.readFileSync("/Users/danhantao/Desktop/private/33iq_nopass.key"),
+  cert: fs.readFileSync("/Users/danhantao/Desktop/private/33iq.crt")
 };
 
 // Our HTTPS server does nothing but service WebSocket

@@ -64,6 +64,10 @@ function log_error(text) {
   console.error("[" + time.toLocaleTimeString() + "] " + text);
 }
 
+function restartICE(){
+
+}
+
 // Send a JavaScript object by converting it to JSON and sending
 // it as a message on the WebSocket connection.
 
@@ -210,21 +214,21 @@ function handleKey(evt) {
 // use in our video call. Then we configure event handlers to get
 // needed notifications on the call.
 
+var configure = {
+    iceServers: [     // Information about ICE servers - Use your own!
+      
+    ],
+    iceTransportPolicy: "relay"
+  };
+
+
 function createPeerConnection() {
   log("Setting up a connection...");
 
   // Create an RTCPeerConnection which knows to use our chosen
   // STUN server.
 
-  myPeerConnection = new RTCPeerConnection({
-    iceServers: [     // Information about ICE servers - Use your own!
-      {
-        urls: "turn:" + myHostname,  // A TURN server
-        username: "webrtc",
-        credential: "turnserver"
-      }
-    ]
-  });
+  myPeerConnection = new RTCPeerConnection(configure);
 
   // Do we have addTrack()? If not, we will use streams instead.
 

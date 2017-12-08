@@ -65,7 +65,24 @@ function log_error(text) {
 }
 
 function restartICE(){
-
+   // 重置ICE
+  myPeerConnection.createOffer({iceRestart:true,iceTransportPolicy:"all"})
+  .then(function(offer) {
+    log_error("--- offer:"+offer);
+    log("---> Creating new description object to send to remote peer");
+    return myPeerConnection.setLocalDescription(offer);
+  })
+  .then(function() {
+    log("--->danhantao  Sending offer to remote peer");
+    var msg = {
+      name: myUsername,
+      target: targetUsername,
+      type: "video-offer-restart",
+      sdp: myPeerConnection.localDescription
+    };
+    sendToServer(msg);
+  })
+  .catch(reportError);
 }
 
 // Send a JavaScript object by converting it to JSON and sending
@@ -155,6 +172,11 @@ function connect() {
         handleVideoOfferMsg(msg);
         break;
 
+      case "video-offer-restart":  // Invitation and offer to chat
+        log("danhantao received video-offer-restart");
+        handleVideoOfferMsg(msg);
+        break;
+
       case "video-answer":  // Callee has answered our offer
         handleVideoAnswerMsg(msg);
         break;
@@ -216,7 +238,7 @@ function handleKey(evt) {
 
 var configure = {
     iceServers: [     // Information about ICE servers - Use your own!
-      
+      // TODO:
     ],
     iceTransportPolicy: "relay"
   };
@@ -548,6 +570,10 @@ function invite(evt) {
 // stream, then create and send an answer to the caller.
 
 function handleVideoOfferMsg(msg) {
+  if (myPeerConnection) {
+  }else{
+      createPeerConnection();
+  }
   var localStream = null;
 
   targetUsername = msg.name;
@@ -555,7 +581,6 @@ function handleVideoOfferMsg(msg) {
   // Call createPeerConnection() to create the RTCPeerConnection.
 
   log("Starting to accept invitation from " + targetUsername);
-  createPeerConnection();
 
   // We need to set the remote description to the received SDP offer
   // so that our local WebRTC layer knows how to talk to the caller.

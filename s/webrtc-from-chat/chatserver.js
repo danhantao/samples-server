@@ -154,11 +154,14 @@ var httpsOptions = {
 // requests are handled by the main server on the box. If you
 // want to, you can return real HTML here and serve Web content.
 
-var httpsServer = https.createServer(httpsOptions, function(request, response) {
-  log("Received secure request for " + request.url);
-  response.writeHead(404);
-  response.end();
-});
+// var httpsServer = https.createServer(httpsOptions, function(request, response) {
+//   log("Received secure request for " + request.url);
+//   response.writeHead(404);
+//   response.end();
+// });
+
+var httpsServer = https.createServer(httpsOptions, app);
+
 
 // Spin up the HTTPS server on the port assigned to this sample.
 // This will be turned into a WebSocket port very shortly.

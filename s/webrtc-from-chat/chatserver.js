@@ -145,8 +145,8 @@ function sendUserListToAll() {
 // server.
 
 var httpsOptions = {
-  key: fs.readFileSync("/Users/danhantao/Desktop/private/33iq_nopass.key"),
-  cert: fs.readFileSync("/Users/danhantao/Desktop/private/33iq.crt")
+  key: fs.readFileSync("private/33iq_nopass.key"),
+  cert: fs.readFileSync("private/33iq.crt")
 };
 
 // Our HTTPS server does nothing but service WebSocket

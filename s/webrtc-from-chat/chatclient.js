@@ -64,20 +64,24 @@ function log_error(text) {
   console.error("[" + time.toLocaleTimeString() + "] " + text);
 }
 
+// receviver offer
+var recevierOfferFlag = false;
+
 function restartICE(){
-   // 重置ICE
-  myPeerConnection.createOffer({iceRestart:true,iceTransportPolicy:"all"})
+  configure.iceRestart = true;
+  configure.iceTransportPolicy = "all";
+  myPeerConnection.createOffer(configure)
   .then(function(offer) {
     log_error("--- offer:"+offer);
     log("---> Creating new description object to send to remote peer");
     return myPeerConnection.setLocalDescription(offer);
   })
   .then(function() {
-    log("--->danhantao  Sending offer to remote peer");
+    // log("--->danhantao  Sending offer to remote peer");
     var msg = {
       name: myUsername,
       target: targetUsername,
-      type: "video-offer-restart",
+      type: "video-offer",
       sdp: myPeerConnection.localDescription
     };
     sendToServer(msg);
@@ -172,11 +176,6 @@ function connect() {
         handleVideoOfferMsg(msg);
         break;
 
-      case "video-offer-restart":  // Invitation and offer to chat
-        log("danhantao received video-offer-restart");
-        handleVideoOfferMsg(msg);
-        break;
-
       case "video-answer":  // Callee has answered our offer
         handleVideoAnswerMsg(msg);
         break;
@@ -238,7 +237,14 @@ function handleKey(evt) {
 
 var configure = {
     iceServers: [     // Information about ICE servers - Use your own!
-      // TODO:
+        {
+        urls:"turn:54.222.180.211:3478",
+        username: "webrtcu",
+        credential: "webrtcpass"
+
+      },{
+        urls:"stun:54.222.180.211:3478"
+      }
     ],
     iceTransportPolicy: "relay"
   };
@@ -284,6 +290,10 @@ function createPeerConnection() {
 
 function handleNegotiationNeededEvent() {
   log("*** Negotiation needed");
+  if (recevierOfferFlag) {
+      log("*** receviver offer flag is ture");
+    return;
+  }
 
   log("---> Creating offer");
   myPeerConnection.createOffer().then(function(offer) {
@@ -546,6 +556,9 @@ function invite(evt) {
     // RTCPeerConnection.
 
     log("Requesting webcam access...");
+    
+
+    recevierOfferFlag = false;
 
     navigator.mediaDevices.getUserMedia(mediaConstraints)
     .then(function(localStream) {
@@ -574,6 +587,7 @@ function handleVideoOfferMsg(msg) {
   }else{
       createPeerConnection();
   }
+  recevierOfferFlag = true;
   var localStream = null;
 
   targetUsername = msg.name;
